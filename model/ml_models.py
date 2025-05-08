@@ -23,6 +23,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + './../..')
 
 importlib.reload(evaluation)
 import evaluation
+
+from tqdm import tqdm
+
 # MAX_LEN=12
 # MAX_COND_SEQ=56
 # MAX_PROC_SEQ=40
@@ -100,7 +103,10 @@ class ML_models():
 
                     concat_cols.extend(cols_t)
             print('train_hids',len(train_hids))
+            print("getting XY...")
             X_train,Y_train=self.getXY(train_hids,labels,concat_cols)
+            print("X train", X_train.head(10))
+            print("Y train", Y_train.head(10))
             #encoding categorical
             gen_encoder = LabelEncoder()
             eth_encoder = LabelEncoder()
@@ -182,7 +188,7 @@ class ML_models():
         y_df=pd.DataFrame()   
         features=[]
         #print(ids)
-        for sample in ids:
+        for sample in tqdm(ids):
             if self.data_icu:
                 y=labels[labels['stay_id']==sample]['label']
             else:
@@ -190,7 +196,7 @@ class ML_models():
             
             #print(sample)
             dyn=pd.read_csv('./data/csv/'+str(sample)+'/dynamic.csv',header=[0,1])
-            
+
             if self.concat:
                 dyn.columns=dyn.columns.droplevel(0)
                 dyn=dyn.to_numpy()

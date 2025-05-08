@@ -63,6 +63,12 @@ class Generator():
         data['los']=data['los'].astype(str)
         data[['days', 'dummy','hours']] = data['los'].str.split(' ', -1, expand=True)
         data[['hours','min','sec']] = data['hours'].str.split(':', -1, expand=True)
+
+        # added to avoid conversion error due to NaT
+        data['days'] = pd.to_numeric(data['days'], errors='coerce')
+        data['hours'] = pd.to_numeric(data['hours'], errors='coerce')
+        data = data.dropna(subset=['days', 'hours'])
+        
         data['los']=pd.to_numeric(data['days'])*24+pd.to_numeric(data['hours'])
         data=data.drop(columns=['days', 'dummy','hours','min','sec'])
         data=data[data['los']>0]
